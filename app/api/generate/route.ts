@@ -61,15 +61,17 @@ A2: Second answer
       }).filter(pair => pair.question && pair.answer);
 
       return NextResponse.json(qaPairs);
-    } catch (apiError: any) {
+    } catch (apiError: unknown) {
       console.error('DeepSeek API Error:', apiError);
-      const errorMessage = apiError?.response?.data?.error || apiError.message || 'Unknown error';
+      const errorMessage = apiError instanceof Error 
+        ? apiError.message 
+        : 'Unknown error';
       return NextResponse.json(
         { error: 'Failed to generate questions: ' + errorMessage },
         { status: 500 }
       );
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error:', error);
     return NextResponse.json(
       { error: 'Failed to generate questions' },

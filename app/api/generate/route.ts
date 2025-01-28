@@ -27,8 +27,8 @@ export async function POST(request: Request) {
     }
 
     const openai = new OpenAI({
-      baseURL: 'https://api.deepseek.com',
-      apiKey: apiKey
+      apiKey: apiKey,
+      baseURL: 'https://api.deepseek.com/v1'
     });
 
     console.log('Making API request to DeepSeek...');

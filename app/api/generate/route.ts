@@ -18,17 +18,9 @@ export async function POST(request: Request) {
       );
     }
 
-    const apiKey = config.deepseekApiKey;
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: 'DeepSeek API key not configured' },
-        { status: 500 }
-      );
-    }
-
     const openai = new OpenAI({
-      apiKey: apiKey,
-      baseURL: 'https://api.deepseek.com'  // No /v1 needed
+      apiKey: config.deepseekApiKey,
+      baseURL: 'https://api.deepseek.com'
     });
 
     console.log('Making API request to DeepSeek...');
@@ -46,7 +38,7 @@ A2: Second answer
 
     try {
       const completion = await openai.chat.completions.create({
-        model: "deepseek-chat",  // This will use DeepSeek-V3
+        model: "deepseek-chat",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
@@ -69,10 +61,11 @@ A2: Second answer
       }).filter(pair => pair.question && pair.answer);
 
       return NextResponse.json(qaPairs);
-    } catch (apiError) {
+    } catch (apiError: any) {
       console.error('DeepSeek API Error:', apiError);
+      const errorMessage = apiError?.response?.data?.error || apiError.message || 'Unknown error';
       return NextResponse.json(
-        { error: 'Failed to generate questions: ' + (apiError instanceof Error ? apiError.message : 'Unknown error') },
+        { error: 'Failed to generate questions: ' + errorMessage },
         { status: 500 }
       );
     }

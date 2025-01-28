@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     const openai = new OpenAI({
       apiKey: apiKey,
-      baseURL: 'https://api.deepseek.com/v1'
+      baseURL: 'https://api.deepseek.com'  // No /v1 needed
     });
 
     console.log('Making API request to DeepSeek...');
@@ -46,7 +46,7 @@ A2: Second answer
 
     try {
       const completion = await openai.chat.completions.create({
-        model: "deepseek-chat",
+        model: "deepseek-chat",  // This will use DeepSeek-V3
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }

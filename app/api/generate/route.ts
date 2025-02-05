@@ -12,25 +12,30 @@ const TIMEOUT_MS = 60000; // 60 seconds
 
 export async function POST(request: Request) {
   try {
-    const { jobDescription } = await request.json();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
-    if (!jobDescription) {
-      return NextResponse.json(
-        { error: 'Job description is required' },
-        { status: 400 }
-      );
-    }
+    try {
+      const { jobDescription } = await request.json();
 
-    const openai = new OpenAI({
-      apiKey: config.deepseekApiKey,
-      baseURL: 'https://api.deepseek.com',
-      timeout: TIMEOUT_MS
-    });
+      if (!jobDescription) {
+        clearTimeout(timeoutId);
+        return NextResponse.json(
+          { error: 'Job description is required' },
+          { status: 400 }
+        );
+      }
 
-    // Successfully tested with DeepSeek API - working version
-    console.log('Making API request to DeepSeek...');
+      const openai = new OpenAI({
+        apiKey: config.deepseekApiKey,
+        baseURL: 'https://api.deepseek.com',
+        timeout: TIMEOUT_MS
+      });
 
-    const systemPrompt = `You are an expert interviewer. Based on the provided job description, generate 5 relevant interview questions and their detailed answers. Each question should help assess the candidate's suitability for the role. Format your response exactly as follows:
+      // Successfully tested with DeepSeek API - working version
+      console.log('Making API request to DeepSeek...');
+
+      const systemPrompt = `You are an expert interviewer. Based on the provided job description, generate 5 relevant interview questions and their detailed answers. Each question should help assess the candidate's suitability for the role. Format your response exactly as follows:
 
 Q1: First question
 A1: First answer
@@ -39,40 +44,49 @@ Q2: Second question
 A2: Second answer
 ... and so on for all 5 pairs.`;
 
-    const userPrompt = `Job Description: ${jobDescription}\n\nGenerate 5 relevant interview questions and their answers that will help assess if a candidate is suitable for this role.`;
+      const userPrompt = `Job Description: ${jobDescription}\n\nGenerate 5 relevant interview questions and their answers that will help assess if a candidate is suitable for this role.`;
 
-    try {
-      const completion = await openai.chat.completions.create({
-        model: "deepseek-chat",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-        temperature: 0.3,
-        max_tokens: 1000
-      });
+      try {
+        const completion = await openai.chat.completions.create({
+          model: "deepseek-chat",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt }
+          ],
+          temperature: 0.3,
+          max_tokens: 1000
+        });
 
-      const content = completion.choices[0].message.content;
-      if (!content) {
-        throw new Error('No content received from API');
+        clearTimeout(timeoutId);
+
+        const content = completion.choices[0].message.content;
+        if (!content) {
+          throw new Error('No content received from API');
+        }
+
+        // Parse the response into QA pairs
+        const qaPairs: QAPair[] = content.split('|||').map((pair: string) => {
+          const lines = pair.trim().split('\n');
+          const question = lines[0]?.replace(/^Q\d+:\s*/, '').trim() || '';
+          const answer = lines[1]?.replace(/^A\d+:\s*/, '').trim() || '';
+          return { question, answer };
+        }).filter(pair => pair.question && pair.answer);
+
+        return NextResponse.json(qaPairs);
+      } catch (apiError: unknown) {
+        console.error('DeepSeek API Error:', apiError);
+        const errorMessage = apiError instanceof Error 
+          ? apiError.message 
+          : 'Unknown error';
+        return NextResponse.json(
+          { error: 'Failed to generate questions: ' + errorMessage },
+          { status: 500 }
+        );
       }
-
-      // Parse the response into QA pairs
-      const qaPairs: QAPair[] = content.split('|||').map((pair: string) => {
-        const lines = pair.trim().split('\n');
-        const question = lines[0]?.replace(/^Q\d+:\s*/, '').trim() || '';
-        const answer = lines[1]?.replace(/^A\d+:\s*/, '').trim() || '';
-        return { question, answer };
-      }).filter(pair => pair.question && pair.answer);
-
-      return NextResponse.json(qaPairs);
-    } catch (apiError: unknown) {
-      console.error('DeepSeek API Error:', apiError);
-      const errorMessage = apiError instanceof Error 
-        ? apiError.message 
-        : 'Unknown error';
+    } catch (error: unknown) {
+      console.error('Error:', error);
       return NextResponse.json(
-        { error: 'Failed to generate questions: ' + errorMessage },
+        { error: 'Failed to generate questions' },
         { status: 500 }
       );
     }

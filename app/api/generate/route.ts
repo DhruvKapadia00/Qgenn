@@ -7,6 +7,9 @@ type QAPair = {
   answer: string;
 };
 
+// Using 60-second timeout as configured in vercel.json
+const TIMEOUT_MS = 60000; // 60 seconds
+
 export async function POST(request: Request) {
   try {
     const { jobDescription } = await request.json();
@@ -20,7 +23,8 @@ export async function POST(request: Request) {
 
     const openai = new OpenAI({
       apiKey: config.deepseekApiKey,
-      baseURL: 'https://api.deepseek.com'
+      baseURL: 'https://api.deepseek.com',
+      timeout: TIMEOUT_MS
     });
 
     // Successfully tested with DeepSeek API - working version
@@ -44,8 +48,8 @@ A2: Second answer
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        temperature: 0.7,
-        max_tokens: 2000
+        temperature: 0.3,
+        max_tokens: 1000
       });
 
       const content = completion.choices[0].message.content;

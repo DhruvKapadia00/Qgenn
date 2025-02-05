@@ -23,6 +23,7 @@ export async function POST(request: Request) {
       baseURL: 'https://api.deepseek.com'
     });
 
+    // Successfully tested with DeepSeek API - working version
     console.log('Making API request to DeepSeek...');
 
     const systemPrompt = `You are an expert interviewer. Based on the provided job description, generate 5 relevant interview questions and their detailed answers. Each question should help assess the candidate's suitability for the role. Format your response exactly as follows:

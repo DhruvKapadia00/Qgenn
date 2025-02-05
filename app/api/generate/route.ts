@@ -44,8 +44,8 @@ A2: Second answer
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        temperature: 0.7,
-        max_tokens: 2000
+        temperature: 0.3,
+        max_tokens: 1000
       });
 
       const content = completion.choices[0].message.content;

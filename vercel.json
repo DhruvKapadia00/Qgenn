@@ -1,23 +1,23 @@
 {
   "version": 2,
   "functions": {
-    "app/api/generate/route": {
+    "api/generate": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "app/api/test-deepseek/route": {
+    "api/test-deepseek": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "app/api/env-test/route": {
+    "api/env-test": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "app/api/test/route": {
+    "api/test": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "app/api/test-api/route": {
+    "api/test-api": {
       "maxDuration": 300,
       "memory": 1024
     }

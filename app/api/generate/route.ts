@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
+export const maxDuration = 60; // Set to 60 seconds max
 export const config = {
-  runtime: 'nodejs',
-  maxDuration: 300
+  runtime: 'nodejs'
 };
 
-const TIMEOUT_MS = 300000; // 5 minutes
+const TIMEOUT_MS = 55000; // Set to 55 seconds to allow for some buffer
 
 export async function POST(request: Request) {
   try {
@@ -49,14 +49,12 @@ export async function POST(request: Request) {
         timeout: TIMEOUT_MS
       });
 
-      const systemPrompt = `You are an expert technical interviewer. Generate exactly 5 technical interview questions with detailed answers based on the job description. 
-Format each question and answer like this:
-Q: "Question text here"
-A: "Answer text here"
+      const systemPrompt = `You are a technical interviewer. Generate 5 short, focused technical questions. Keep answers brief and direct.
+Format:
+Q: "Question"
+A: "Brief answer"`;
 
-Focus on key technical skills and concepts from the job description. Questions should test both theoretical knowledge and practical experience.`;
-
-      const userPrompt = `Generate 5 technical interview questions with answers for this position:\n\n${jobDescription}`;
+      const userPrompt = `Generate 5 quick technical questions for: ${jobDescription.substring(0, 200)}`;
 
       // Successfully tested with DeepSeek API - working version
       console.log('Making API request to DeepSeek...');
@@ -70,8 +68,10 @@ Focus on key technical skills and concepts from the job description. Questions s
             { role: "system", content: systemPrompt },
             { role: "user", content: userPrompt }
           ],
-          temperature: 0.3,
-          max_tokens: 2000
+          temperature: 0.7,
+          max_tokens: 1000,
+          presence_penalty: 0.1,
+          frequency_penalty: 0.1
         });
 
         const responseContent = completion.choices[0]?.message?.content;

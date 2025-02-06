@@ -1,23 +1,7 @@
 {
   "version": 2,
   "functions": {
-    ".next/server/app/api/generate/route.js": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    ".next/server/app/api/test-deepseek/route.js": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    ".next/server/app/api/env-test/route.js": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    ".next/server/app/api/test/route.js": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    ".next/server/app/api/test-api/route.js": {
+    "app/api/*/*": {
       "maxDuration": 300,
       "memory": 1024
     }

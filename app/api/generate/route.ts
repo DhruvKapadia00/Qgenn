@@ -7,8 +7,8 @@ type QAPair = {
   answer: string;
 };
 
-// Using 60-second timeout as configured in vercel.json
-const TIMEOUT_MS = 60000; // 60 seconds
+// Using 300-second timeout as configured in vercel.json
+const TIMEOUT_MS = 300000; // 300 seconds (5 minutes)
 
 export async function POST(request: Request) {
   try {

@@ -55,7 +55,16 @@ export default function Home() {
         throw new Error(data.error || 'Failed to generate questions');
       }
       
-      setQaPairs(data);
+      // Parse the content string into QA pairs
+      const content = data.content;
+      const questions = content.split('\n')
+        .filter(line => line.trim())
+        .map(line => ({
+          question: line,
+          answer: '' // You can implement answer functionality later
+        }));
+      
+      setQaPairs(questions);
     } catch (error) {
       console.error('Error:', error);
       setError(error instanceof Error ? error.message : 'Failed to generate questions');

@@ -58,6 +58,8 @@ export async function POST(request: Request) {
       console.log('Making API request to DeepSeek...');
 
       try {
+        console.log('Starting API request with job description:', jobDescription.substring(0, 100) + '...');
+        
         const completion = await openai.chat.completions.create({
           model: "deepseek-chat",
           messages: [
@@ -68,11 +70,13 @@ export async function POST(request: Request) {
           max_tokens: 2000
         });
 
-        console.log('Received response from DeepSeek:', completion.choices[0]?.message?.content?.substring(0, 50) + '...');
+        console.log('Received response from DeepSeek:', completion.choices[0]?.message?.content?.substring(0, 100) + '...');
+        console.log('Response status:', completion.choices[0]?.finish_reason);
 
         clearTimeout(timeoutId);
 
         const content = completion.choices[0].message.content;
+        console.log('Sending response to client:', content.substring(0, 100) + '...');
 
         return NextResponse.json({ content });
       } catch (error) {

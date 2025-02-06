@@ -7,8 +7,7 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: ["*"]
     },
-    typedRoutes: true,
-    serverComponentsExternalPackages: []
+    typedRoutes: true
   },
   output: 'standalone',
   typescript: {

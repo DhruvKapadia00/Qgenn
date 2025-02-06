@@ -70,15 +70,19 @@ export async function POST(request: Request) {
           max_tokens: 2000
         });
 
-        console.log('Received response from DeepSeek:', completion.choices[0]?.message?.content?.substring(0, 100) + '...');
+        const responseContent = completion.choices[0]?.message?.content;
+        if (!responseContent) {
+          throw new Error('No content received from API');
+        }
+
+        console.log('Received response from DeepSeek:', responseContent.substring(0, 100) + '...');
         console.log('Response status:', completion.choices[0]?.finish_reason);
 
         clearTimeout(timeoutId);
 
-        const content = completion.choices[0].message.content;
-        console.log('Sending response to client:', content.substring(0, 100) + '...');
+        console.log('Sending response to client:', responseContent.substring(0, 100) + '...');
 
-        return NextResponse.json({ content });
+        return NextResponse.json({ content: responseContent });
       } catch (error) {
         console.error('Error calling DeepSeek API:', error);
         return NextResponse.json(

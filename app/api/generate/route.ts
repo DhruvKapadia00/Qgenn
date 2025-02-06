@@ -40,8 +40,13 @@ export async function POST(request: Request) {
         timeout: TIMEOUT_MS
       });
 
-      const systemPrompt = `Generate 5 concise technical interview questions with brief answers. Format: Q: "question" A: "answer"`;
-      const userPrompt = `Based on this role, generate 5 quick technical questions: ${jobDescription.substring(0, 150)}`;
+      const systemPrompt = `You are an expert technical interviewer. Generate 5 high-quality technical questions that assess both knowledge and problem-solving skills. Each question should:
+1. Be specific and focused
+2. Test real-world scenarios
+3. Reveal candidate's depth of understanding
+Format each as: Q: "question" A: "concise but informative answer"`;
+
+      const userPrompt = `For this ${jobDescription.substring(0, 100)} role, generate 5 technical questions focusing on the most critical skills. Mix theoretical knowledge and practical experience.`;
 
       const completion = await openai.chat.completions.create({
         model: "deepseek-chat",
@@ -49,10 +54,10 @@ export async function POST(request: Request) {
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
         ],
-        temperature: 0.7,
+        temperature: 0.8,
         max_tokens: 800,
-        presence_penalty: 0.1,
-        frequency_penalty: 0.1
+        presence_penalty: 0.2,
+        frequency_penalty: 0.3
       });
 
       const responseContent = completion.choices[0]?.message?.content;

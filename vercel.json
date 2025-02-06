@@ -2,12 +2,6 @@
   "version": 2,
   "buildCommand": "next build",
   "outputDirectory": ".next",
-  "functions": {
-    "api/(.*)": {
-      "maxDuration": 300,
-      "memory": 1024
-    }
-  },
   "cleanUrls": true,
   "trailingSlash": false
 }

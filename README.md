@@ -22,8 +22,8 @@ Generate perfect interview questions for any role using AI.
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/qgen.git
-cd qgen
+git clone https://github.com/DhruvKapadia00/Qgenn.git
+cd qgenn
 ```
 
 2. Install dependencies:

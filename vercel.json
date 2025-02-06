@@ -3,7 +3,23 @@
   "buildCommand": "next build",
   "outputDirectory": ".next",
   "functions": {
-    "app/api/*/route": {
+    "app/api/generate/route.ts": {
+      "maxDuration": 300,
+      "memory": 1024
+    },
+    "app/api/test-deepseek/route.ts": {
+      "maxDuration": 300,
+      "memory": 1024
+    },
+    "app/api/env-test/route.ts": {
+      "maxDuration": 300,
+      "memory": 1024
+    },
+    "app/api/test/route.ts": {
+      "maxDuration": 300,
+      "memory": 1024
+    },
+    "app/api/test-api/route.ts": {
       "maxDuration": 300,
       "memory": 1024
     }

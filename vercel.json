@@ -1,15 +1,15 @@
 {
   "version": 2,
   "functions": {
-    "/api/generate": {
+    "api/generate": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "/api/test-deepseek": {
+    "api/test-deepseek": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "/api/env-test": {
+    "api/env-test": {
       "maxDuration": 300,
       "memory": 1024
     }

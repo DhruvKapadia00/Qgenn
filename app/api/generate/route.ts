@@ -49,10 +49,13 @@ export async function POST(request: Request) {
         timeout: TIMEOUT_MS
       });
 
-      const systemPrompt = `You are an expert technical interviewer. Your task is to generate interview questions based on the provided job description.
-      Focus on key technical skills and concepts mentioned in the job description. Generate questions that test both theoretical knowledge and practical experience.`;
+      const systemPrompt = `You are an expert technical interviewer. Generate exactly 5 technical interview questions based on the job description. 
+Format each question like this:
+- "Question text here"
 
-      const userPrompt = `Please generate 5 technical interview questions for a candidate applying for this position:\n\n${jobDescription}`;
+Focus on key technical skills and concepts from the job description. Questions should test both theoretical knowledge and practical experience.`;
+
+      const userPrompt = `Generate 5 technical interview questions for this position:\n\n${jobDescription}`;
 
       // Successfully tested with DeepSeek API - working version
       console.log('Making API request to DeepSeek...');

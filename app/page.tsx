@@ -58,22 +58,13 @@ export default function Home() {
       // Parse the content string into QA pairs
       const content = data.content;
       
-      // Split content into questions using regex
-      const questionRegex = /Q\d+:|^\d+\.|^\d+\)|^\-\s/m;
-      const questions = content
-        .split(questionRegex)
-        .filter((text: string) => text.trim())
-        .map((text: string) => {
-          // Clean up the text and remove any "A:" prefixes
-          const cleanText = text
-            .replace(/^A\d*:|^A:|^\-\s/m, '')
-            .trim();
-            
-          return {
-            question: cleanText,
-            answer: '' // You can implement answer functionality later
-          };
-        });
+      // Extract only the actual questions (those starting with a dash)
+      const questions = content.match(/\-\s+"([^"]+)"/g)
+        ?.map((text: string) => ({
+          question: text.replace(/^\-\s+"(.+)"$/, '$1').trim(),
+          answer: '' // You can implement answer functionality later
+        }))
+        .slice(0, 5) || []; // Ensure we only get 5 questions
       
       setQaPairs(questions);
     } catch (error) {

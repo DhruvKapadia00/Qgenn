@@ -57,12 +57,23 @@ export default function Home() {
       
       // Parse the content string into QA pairs
       const content = data.content;
-      const questions = content.split('\n')
-        .filter((line: string) => line.trim())
-        .map((line: string) => ({
-          question: line,
-          answer: '' // You can implement answer functionality later
-        }));
+      
+      // Split content into questions using regex
+      const questionRegex = /Q\d+:|^\d+\.|^\d+\)|^\-\s/m;
+      const questions = content
+        .split(questionRegex)
+        .filter((text: string) => text.trim())
+        .map((text: string) => {
+          // Clean up the text and remove any "A:" prefixes
+          const cleanText = text
+            .replace(/^A\d*:|^A:|^\-\s/m, '')
+            .trim();
+            
+          return {
+            question: cleanText,
+            answer: '' // You can implement answer functionality later
+          };
+        });
       
       setQaPairs(questions);
     } catch (error) {

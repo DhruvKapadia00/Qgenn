@@ -1,22 +1,9 @@
 {
+  "version": 2,
+  "buildCommand": "next build",
+  "outputDirectory": ".next",
   "functions": {
-    "api/generate/route": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    "api/test-deepseek/route": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    "api/env-test/route": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    "api/test/route": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    "api/test-api/route": {
+    "**/*.func/**": {
       "maxDuration": 300,
       "memory": 1024
     }

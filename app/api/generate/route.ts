@@ -32,10 +32,7 @@ export async function POST(request: Request) {
 
       const openai = new OpenAI({
         apiKey: process.env.DEEPSEEK_API_KEY,
-        baseURL: 'https://api.deepseek.com/v1',
-        defaultHeaders: {
-          'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
-        },
+        baseURL: 'https://api.deepseek.com',
         timeout: TIMEOUT_MS
       });
 

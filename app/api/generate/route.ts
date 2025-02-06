@@ -1,35 +1,24 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { config } from '../../../src/config';
 
-type QAPair = {
-  question: string;
-  answer: string;
-};
-
-// Using 300-second timeout as configured in vercel.json
-const TIMEOUT_MS = 300000; // 300 seconds (5 minutes)
-
-// This API route uses DeepSeek's API to generate interview questions based on a job description.
-// It ensures consistent formatting with ||| separators between Q/A pairs and validates that exactly 5 pairs are generated.
-// The timeout is set to 300 seconds to accommodate longer processing times.
+const TIMEOUT_MS = 300000; // 5 minutes
 
 export async function POST(request: Request) {
   try {
+    const body = await request.json();
+    const { jobDescription } = body;
+
+    if (!jobDescription) {
+      return NextResponse.json(
+        { error: 'Job description is required' },
+        { status: 400 }
+      );
+    }
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     try {
-      const { jobDescription } = await request.json();
-
-      if (!jobDescription) {
-        clearTimeout(timeoutId);
-        return NextResponse.json(
-          { error: 'Job description is required' },
-          { status: 400 }
-        );
-      }
-
       // Debug environment variables
       console.log('Environment variables:', {
         hasDeepseekKey: !!process.env.DEEPSEEK_API_KEY,
@@ -55,27 +44,13 @@ export async function POST(request: Request) {
         timeout: TIMEOUT_MS
       });
 
+      const systemPrompt = `You are an expert technical interviewer. Your task is to generate interview questions based on the provided job description.
+      Focus on key technical skills and concepts mentioned in the job description. Generate questions that test both theoretical knowledge and practical experience.`;
+
+      const userPrompt = `Please generate 5 technical interview questions for a candidate applying for this position:\n\n${jobDescription}`;
+
       // Successfully tested with DeepSeek API - working version
       console.log('Making API request to DeepSeek...');
-
-      const systemPrompt = `You are an expert interviewer. Based on the provided job description, generate 5 relevant interview questions and their detailed answers. Each question should help assess the candidate's suitability for the role. Format your response EXACTLY as follows, and make sure to include all 5 questions:
-
-Q1: First question
-A1: First answer
-|||
-Q2: Second question
-A2: Second answer
-|||
-Q3: Third question
-A3: Third answer
-|||
-Q4: Fourth question
-A4: Fourth answer
-|||
-Q5: Fifth question
-A5: Fifth answer`;
-
-      const userPrompt = `Job Description: ${jobDescription}\n\nGenerate 5 relevant interview questions and their answers that will help assess if a candidate is suitable for this role. Make sure to follow the exact format with ||| separators between each Q/A pair.`;
 
       try {
         const completion = await openai.chat.completions.create({
@@ -93,51 +68,28 @@ A5: Fifth answer`;
         clearTimeout(timeoutId);
 
         const content = completion.choices[0].message.content;
-        if (!content) {
-          throw new Error('No content received from API');
-        }
 
-        // Parse the response into QA pairs
-        const qaPairs: QAPair[] = content.split('|||').map((pair: string) => {
-          const lines = pair.trim().split('\n');
-          const question = lines[0]?.replace(/^Q\d+:\s*/, '').trim() || '';
-          const answer = lines[1]?.replace(/^A\d+:\s*/, '').trim() || '';
-          return { question, answer };
-        }).filter(pair => pair.question && pair.answer);
-
-        // Ensure we have exactly 5 pairs
-        if (qaPairs.length !== 5) {
-          console.error('Unexpected number of QA pairs:', qaPairs.length);
-          console.log('Raw content:', content);
-          return NextResponse.json(
-            { error: 'Failed to generate the correct number of questions' },
-            { status: 500 }
-          );
-        }
-
-        return NextResponse.json(qaPairs);
-      } catch (apiError: unknown) {
-        console.error('DeepSeek API Error:', apiError);
-        const errorMessage = apiError instanceof Error 
-          ? apiError.message 
-          : 'Unknown error';
+        return NextResponse.json({ content });
+      } catch (error) {
+        console.error('Error calling DeepSeek API:', error);
         return NextResponse.json(
-          { error: 'Failed to generate questions: ' + errorMessage },
+          { error: 'Failed to generate questions' },
           { status: 500 }
         );
       }
-    } catch (error: unknown) {
+    } catch (error) {
+      clearTimeout(timeoutId);
       console.error('Error:', error);
       return NextResponse.json(
-        { error: 'Failed to generate questions' },
+        { error: 'Internal server error' },
         { status: 500 }
       );
     }
-  } catch (error: unknown) {
-    console.error('Error:', error);
+  } catch (error) {
+    console.error('Error parsing request:', error);
     return NextResponse.json(
-      { error: 'Failed to generate questions' },
-      { status: 500 }
+      { error: 'Invalid request body' },
+      { status: 400 }
     );
   }
 }

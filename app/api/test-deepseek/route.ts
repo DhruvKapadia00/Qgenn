@@ -26,10 +26,11 @@ export async function GET() {
       success: true,
       message: completion.choices[0].message.content
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('DeepSeek API Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: error.message || 'Unknown error' },
+      { error: errorMessage },
       { status: 500 }
     );
   }

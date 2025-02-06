@@ -3,7 +3,7 @@
   "buildCommand": "next build",
   "outputDirectory": ".next",
   "functions": {
-    ".next/server/app/api/*/route.js": {
+    "/api/*": {
       "maxDuration": 300,
       "memory": 1024
     }

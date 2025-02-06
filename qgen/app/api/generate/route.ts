@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { config } from '../../../config';
+import { config } from '@/src/config';
 
 type QAPair = {
   question: string;
@@ -9,6 +9,10 @@ type QAPair = {
 
 // Using 300-second timeout as configured in vercel.json
 const TIMEOUT_MS = 300000; // 300 seconds (5 minutes)
+
+// This API route uses DeepSeek's API to generate interview questions based on a job description.
+// It ensures consistent formatting with ||| separators between Q/A pairs and validates that exactly 5 pairs are generated.
+// The timeout is set to 300 seconds to accommodate longer processing times.
 
 export async function POST(request: Request) {
   try {

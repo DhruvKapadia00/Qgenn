@@ -1,28 +1,27 @@
 {
   "version": 2,
   "functions": {
-    "app/api/generate/route.ts": {
+    ".next/server/app/api/generate/route.js": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "app/api/test-deepseek/route.ts": {
+    ".next/server/app/api/test-deepseek/route.js": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "app/api/env-test/route.ts": {
+    ".next/server/app/api/env-test/route.js": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "app/api/test/route.ts": {
+    ".next/server/app/api/test/route.js": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "app/api/test-api/route.ts": {
+    ".next/server/app/api/test-api/route.js": {
       "maxDuration": 300,
       "memory": 1024
     }
   },
-  "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/:path*" }
-  ]
+  "buildCommand": "next build",
+  "outputDirectory": ".next"
 }

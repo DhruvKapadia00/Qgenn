@@ -4,7 +4,9 @@ const nextConfig = {
     DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
   },
   experimental: {
-    serverActions: true
+    serverActions: {
+      allowedOrigins: ["*"]
+    }
   }
 }
 

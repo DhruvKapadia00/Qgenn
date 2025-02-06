@@ -30,8 +30,27 @@ export async function POST(request: Request) {
         );
       }
 
+      // Debug environment variables
+      console.log('Environment variables:', {
+        hasDeepseekKey: !!process.env.DEEPSEEK_API_KEY,
+        hasPublicKey: !!process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY,
+        envKeys: Object.keys(process.env).filter(key => key.includes('DEEPSEEK')),
+      });
+
+      const apiKey = process.env.DEEPSEEK_API_KEY || process.env.NEXT_PUBLIC_DEEPSEEK_API_KEY;
+      
+      if (!apiKey) {
+        console.error('Neither DEEPSEEK_API_KEY nor NEXT_PUBLIC_DEEPSEEK_API_KEY is set');
+        return NextResponse.json(
+          { error: 'API key not configured' },
+          { status: 500 }
+        );
+      }
+
+      console.log('Using API key:', apiKey.substring(0, 5) + '...');
+      
       const openai = new OpenAI({
-        apiKey: process.env.DEEPSEEK_API_KEY,
+        apiKey: apiKey,
         baseURL: 'https://api.deepseek.com',
         timeout: TIMEOUT_MS
       });
@@ -68,6 +87,8 @@ A5: Fifth answer`;
           temperature: 0.3,
           max_tokens: 2000
         });
+
+        console.log('Received response from DeepSeek:', completion.choices[0]?.message?.content?.substring(0, 50) + '...');
 
         clearTimeout(timeoutId);
 

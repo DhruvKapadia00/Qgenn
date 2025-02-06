@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { config } from '../../config';
+import { config } from '../../../src/config';
 
 type QAPair = {
   question: string;
@@ -9,6 +9,10 @@ type QAPair = {
 
 // Using 300-second timeout as configured in vercel.json
 const TIMEOUT_MS = 300000; // 300 seconds (5 minutes)
+
+// This API route uses DeepSeek's API to generate interview questions based on a job description.
+// It ensures consistent formatting with ||| separators between Q/A pairs and validates that exactly 5 pairs are generated.
+// The timeout is set to 300 seconds to accommodate longer processing times.
 
 export async function POST(request: Request) {
   try {
@@ -35,16 +39,24 @@ export async function POST(request: Request) {
       // Successfully tested with DeepSeek API - working version
       console.log('Making API request to DeepSeek...');
 
-      const systemPrompt = `You are an expert interviewer. Based on the provided job description, generate 5 relevant interview questions and their detailed answers. Each question should help assess the candidate's suitability for the role. Format your response exactly as follows:
+      const systemPrompt = `You are an expert interviewer. Based on the provided job description, generate 5 relevant interview questions and their detailed answers. Each question should help assess the candidate's suitability for the role. Format your response EXACTLY as follows, and make sure to include all 5 questions:
 
 Q1: First question
 A1: First answer
 |||
 Q2: Second question
 A2: Second answer
-... and so on for all 5 pairs.`;
+|||
+Q3: Third question
+A3: Third answer
+|||
+Q4: Fourth question
+A4: Fourth answer
+|||
+Q5: Fifth question
+A5: Fifth answer`;
 
-      const userPrompt = `Job Description: ${jobDescription}\n\nGenerate 5 relevant interview questions and their answers that will help assess if a candidate is suitable for this role.`;
+      const userPrompt = `Job Description: ${jobDescription}\n\nGenerate 5 relevant interview questions and their answers that will help assess if a candidate is suitable for this role. Make sure to follow the exact format with ||| separators between each Q/A pair.`;
 
       try {
         const completion = await openai.chat.completions.create({
@@ -54,7 +66,7 @@ A2: Second answer
             { role: "user", content: userPrompt }
           ],
           temperature: 0.3,
-          max_tokens: 1000
+          max_tokens: 2000
         });
 
         clearTimeout(timeoutId);
@@ -71,6 +83,16 @@ A2: Second answer
           const answer = lines[1]?.replace(/^A\d+:\s*/, '').trim() || '';
           return { question, answer };
         }).filter(pair => pair.question && pair.answer);
+
+        // Ensure we have exactly 5 pairs
+        if (qaPairs.length !== 5) {
+          console.error('Unexpected number of QA pairs:', qaPairs.length);
+          console.log('Raw content:', content);
+          return NextResponse.json(
+            { error: 'Failed to generate the correct number of questions' },
+            { status: 500 }
+          );
+        }
 
         return NextResponse.json(qaPairs);
       } catch (apiError: unknown) {

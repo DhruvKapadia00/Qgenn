@@ -58,8 +58,8 @@ export default function Home() {
       // Parse the content string into QA pairs
       const content = data.content;
       const questions = content.split('\n')
-        .filter(line => line.trim())
-        .map(line => ({
+        .filter((line: string) => line.trim())
+        .map((line: string) => ({
           question: line,
           answer: '' // You can implement answer functionality later
         }));

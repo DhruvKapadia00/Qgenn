@@ -3,7 +3,7 @@
   "buildCommand": "next build",
   "outputDirectory": ".next",
   "functions": {
-    "/api/*": {
+    "api/*": {
       "maxDuration": 300,
       "memory": 1024
     }

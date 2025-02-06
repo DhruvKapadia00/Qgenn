@@ -58,13 +58,15 @@ export default function Home() {
       // Parse the content string into QA pairs
       const content = data.content;
       
-      // Extract only the actual questions (those starting with a dash)
-      const questions = content.match(/\-\s+"([^"]+)"/g)
-        ?.map((text: string) => ({
-          question: text.replace(/^\-\s+"(.+)"$/, '$1').trim(),
-          answer: '' // You can implement answer functionality later
-        }))
-        .slice(0, 5) || []; // Ensure we only get 5 questions
+      // Extract Q&A pairs using regex
+      const pairs = content.match(/Q:\s*"([^"]+)"\s*\nA:\s*"([^"]+)"/g) || [];
+      const questions = pairs.slice(0, 5).map((pair: string) => {
+        const [q, a] = pair.split(/"\s*\nA:\s*"/);
+        return {
+          question: q.replace(/^Q:\s*"/, '').trim(),
+          answer: a.replace(/"$/, '').trim()
+        };
+      });
       
       setQaPairs(questions);
     } catch (error) {

@@ -6,7 +6,13 @@ const nextConfig = {
   experimental: {
     serverActions: {
       allowedOrigins: ["*"]
-    }
+    },
+    typedRoutes: true,
+    serverComponentsExternalPackages: []
+  },
+  output: 'standalone',
+  typescript: {
+    ignoreBuildErrors: false
   }
 }
 

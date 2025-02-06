@@ -1,7 +1,7 @@
 {
   "version": 2,
   "functions": {
-    "app/api/**/route.ts": {
+    "api/**/*": {
       "maxDuration": 300,
       "memory": 1024
     }

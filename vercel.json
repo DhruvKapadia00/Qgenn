@@ -3,23 +3,7 @@
   "buildCommand": "next build",
   "outputDirectory": ".next",
   "functions": {
-    "api/generate": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    "api/test-deepseek": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    "api/env-test": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    "api/test": {
-      "maxDuration": 300,
-      "memory": 1024
-    },
-    "api/test-api": {
+    ".next/server/app/api/*/route.js": {
       "maxDuration": 300,
       "memory": 1024
     }

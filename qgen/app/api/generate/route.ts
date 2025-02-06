@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { config } from '@/src/config';
+import { config } from '../../../src/config';
 
 type QAPair = {
   question: string;

@@ -1,15 +1,15 @@
 {
   "version": 2,
   "functions": {
-    "api/generate": {
+    "app/api/generate/route.ts": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "api/test-deepseek": {
+    "app/api/test-deepseek/route.ts": {
       "maxDuration": 300,
       "memory": 1024
     },
-    "api/env-test": {
+    "app/api/env-test/route.ts": {
       "maxDuration": 300,
       "memory": 1024
     }

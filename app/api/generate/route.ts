@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-export const maxDuration = 5; // Set to 5 seconds max
+export const maxDuration = 300; // Set to maximum possible (300 seconds / 5 minutes)
 export const config = {
   runtime: 'nodejs'
 };
 
-const TIMEOUT_MS = 4000; // Set to 4 seconds to allow for some buffer
+const TIMEOUT_MS = 290000; // Set to 290 seconds to allow for some buffer
 
 export async function POST(request: Request) {
   try {
@@ -55,7 +55,7 @@ Format each as: Q: "question" A: "concise but informative answer"`;
           { role: "user", content: userPrompt }
         ],
         temperature: 0.7,
-        max_tokens: 200, // Reduced token limit for faster responses
+        max_tokens: 1000, // Increased token limit
         presence_penalty: 0.2,
         frequency_penalty: 0.3
       });
